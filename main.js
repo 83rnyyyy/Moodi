@@ -117,7 +117,7 @@ const moodConfigs = {
         bgClass: 'bg-calm',
         emoji: '😌',
         name: 'Calm',
-        backgroundVideo: 'public/calm.mp4',
+        backgroundVideo: 'calm.mp4',
         tracks: [
             'public/calm.mp3',
         ],
@@ -127,7 +127,7 @@ const moodConfigs = {
         bgClass: 'bg-focused',
         emoji: '🎯',
         name: 'Focused',
-        backgroundVideo: 'public/neutral.mp4', 
+        backgroundVideo: 'neutral.mp4', 
         tracks: [
             'public/focused.mp3',
         ],
@@ -137,7 +137,7 @@ const moodConfigs = {
         bgClass: 'bg-stressed',
         emoji: '😰',
         name: 'Stressed',
-        backgroundVideo: 'public/stressed.mp4',
+        backgroundVideo: 'stressed.mp4',
         tracks: [
             'public/stressed.mp3',
         ],
@@ -147,7 +147,7 @@ const moodConfigs = {
         bgClass: 'bg-happy',
         emoji: '😊',
         name: 'Happy',
-        backgroundVideo: 'public/happy.mp4',
+        backgroundVideo: 'happy.mp4',
         tracks: [
             'public/happy.mp3',
         ],
@@ -215,7 +215,7 @@ function updateBackgroundVideo(mood) {
     
 
     
-    video.innerHTML = `<source src="${config.backgroundVideo}" type="video/mp4">`;
+    video.innerHTML = `<source src="public/${config.backgroundVideo}" type="video/mp4">`;
     video.load();
     video.style.display = 'block';
     video.play();

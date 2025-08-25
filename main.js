@@ -181,56 +181,84 @@ function createParticles(count, speed) {
     }
 }
 
-// Set mood function
 function setMood(mood) {
+    console.log('Setting mood to:', mood); // Debug log
+    
     currentMood = mood;
     const config = moodConfigs[mood];
     
     // Update background overlay
     const overlay = document.getElementById('bgOverlay');
     overlay.className = `bg-overlay ${config.bgClass}`;
+    console.log('Updated overlay class to:', overlay.className); // Debug log
     
-    // Update background video (if you have custom videos)
+    // Update background video
     updateBackgroundVideo(mood);
     
     // Update active button
     document.querySelectorAll('.navbar-mood-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.querySelector(`[data-mood="${mood}"]`).classList.add('active');
+    const activeBtn = document.querySelector(`[data-mood="${mood}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        console.log('Set active button for mood:', mood); // Debug log
+    }
     
     // Update particles
     createParticles(config.particles.count, config.particles.speed);
+    console.log('Created particles:', config.particles.count); // Debug log
     
     // Update music if playing
     if (isPlaying) {
         playMoodMusic();
+        console.log('Updated music for mood:', mood); // Debug log
     }
 }
 
-// Update background video based on mood
 function updateBackgroundVideo(mood) {
     const video = document.getElementById('bgVideo');
     const config = moodConfigs[mood];
 
-    // Pause first to avoid overlapping play requests
+    // Pause and reset current video
     video.pause();
+    video.currentTime = 0;
 
-    // Replace the source safely
-    video.innerHTML = `<source src="public/${config.backgroundVideo}" type="video/mp4">`;
-    video.load();
+    // Create new source element
+    const newSource = document.createElement('source');
+    newSource.src = `public/${config.backgroundVideo}`;
+    newSource.type = 'video/mp4';
 
-    // Ensure video is muted so autoplay works without user gesture
+    // Clear existing sources and add new one
+    video.innerHTML = '';
+    video.appendChild(newSource);
+
+    // Ensure video properties are set
     video.muted = true;
+    video.loop = true;
+    video.autoplay = true;
     video.style.display = 'block';
 
-    // Wait until the video can play before calling .play()
-    video.oncanplay = () => {
+    // Load the new video
+    video.load();
+
+    // Use multiple event listeners to ensure video plays
+    const playVideo = () => {
         video.play().catch(err => {
-            // Expected sometimes due to browser policies
             console.warn("Autoplay blocked or interrupted:", err);
         });
     };
+
+    // Try to play when video is ready
+    video.addEventListener('loadeddata', playVideo, { once: true });
+    video.addEventListener('canplay', playVideo, { once: true });
+
+    // Fallback: try to play after a short delay
+    setTimeout(() => {
+        if (video.paused) {
+            playVideo();
+        }
+    }, 100);
 }
 
 // Music functions

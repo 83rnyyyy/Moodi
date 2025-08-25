@@ -10,7 +10,7 @@
 </head>
 <body class="bg-neutral">
     
-    <video class="bg-video" id="bgVideo" autoplay muted loop style="display: none;">
+    <video class="bg-video" id="bgVideo" autoplay muted loop preload style="display: none;">
         <source src="public/calm.mp4" type="video/mp4" data-mood="calm">
         
         <source src="public/neutral.mp4" type="video/mp4" data-mood="focused">
@@ -115,7 +115,7 @@
     </div>
 
     <!-- Audio element for music -->
-    <audio id="audioPlayer" loop>
+    <audio id="audioPlayer" preload loop>
         <source src="" type="audio/mpeg">
     </audio>
     <div class="footer">

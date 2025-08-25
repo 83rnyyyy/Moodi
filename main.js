@@ -212,13 +212,25 @@ function setMood(mood) {
 function updateBackgroundVideo(mood) {
     const video = document.getElementById('bgVideo');
     const config = moodConfigs[mood];
-    
 
-    
+    // Pause first to avoid overlapping play requests
+    video.pause();
+
+    // Replace the source safely
     video.innerHTML = `<source src="public/${config.backgroundVideo}" type="video/mp4">`;
     video.load();
+
+    // Ensure video is muted so autoplay works without user gesture
+    video.muted = true;
     video.style.display = 'block';
-    video.play();
+
+    // Wait until the video can play before calling .play()
+    video.oncanplay = () => {
+        video.play().catch(err => {
+            // Expected sometimes due to browser policies
+            console.warn("Autoplay blocked or interrupted:", err);
+        });
+    };
 }
 
 // Music functions

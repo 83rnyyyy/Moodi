@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodi</title>
+    <link rel="stylesheet" href="style.css">
+        
+    
+</head>
+<body class="bg-neutral">
+    <!-- Background Video/GIF (ADD YOUR CUSTOM BACKGROUNDS HERE) -->
+    <video class="bg-video" id="bgVideo" autoplay muted loop style="display: none;">
+        <source src="calm.mp4" type="video/mp4" data-mood="calm">
+        
+        <source src="neutral.mp4" type="video/mp4" data-mood="focused">
+        <source src="stressed.mp4" type="video/mp4" data-mood="stressed">
+        <source src="happy.mp4" type="video/mp4" data-mood="happy">
+        
+    </video>
+    
+    <!-- Background Overlay -->
+    <div class="bg-overlay" id="bgOverlay"></div>
+
+    <!-- Audio Visualizer -->
+    <div class="audio-visualizer" id="audioVisualizer">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+    </div>
+
+    <!-- Animated background particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">Moodi</div>
+            
+            <!-- Mood Selection Buttons -->
+            <div class="navbar-moods">
+                <button class="navbar-mood-btn" onclick="setMood('calm')" data-mood="calm">
+                    <span>😌</span>
+                    <span>Calm</span>
+                </button>
+                <button class="navbar-mood-btn" onclick="setMood('focused')" data-mood="focused">
+                    <span>🎯</span>
+                    <span>Focused</span>
+                </button>
+                <button class="navbar-mood-btn" onclick="setMood('stressed')" data-mood="stressed">
+                    <span>😰</span>
+                    <span>Stressed</span>
+                </button>
+                <button class="navbar-mood-btn" onclick="setMood('happy')" data-mood="happy">
+                    <span>😊</span>
+                    <span>Happy</span>
+                </button>
+                
+            </div>
+
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <span>📝 Tasks</span>
+            </button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            
+                <h1 id="welcome-title" class="welcome-title">Welcome to your Study Space</h1>
+                <p id="welcome-subtitle" class="welcome-subtitle">Select your mood from the navbar above to customize your environment, then click play to start your focus session</p>
+                
+                <div class="music-controls">
+                    <button class="music-btn" onclick="toggleMusic()" id="musicToggle">
+                        🎵 Play Music
+                    </button>
+                </div>
+            
+        </div>
+    </div>
+    
+
+    <!-- Tasks Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
+        
+        <div class="sidebar-header">
+            <h2 class="sidebar-title">Study Tasks</h2>
+            <input type="text" class="task-input" id="taskInput" placeholder="Add a new task..." onkeypress="handleKeyPress(event)">
+            <button class="add-btn" onclick="addTask()">Add Task</button>
+        </div>
+
+        <div class="tasks-container" id="tasksContainer">
+            <!-- Tasks will be added here dynamically -->
+        </div>
+    </div>
+
+    <!-- Audio element for music -->
+    <audio id="audioPlayer" loop>
+        <source src="" type="audio/mpeg">
+    </audio>
+    <div class="footer">
+        Made by & Property of Bernie Liu
+    </div>
+    <script src="main.js">
+        
+    </script>
+</body>
+</html>

@@ -216,84 +216,41 @@ function setMood(mood) {
     }
 }
 
-// Track current play promise to avoid conflicts
-let currentPlayPromise = null;
-
-// Update background video based on mood
-async function updateBackgroundVideo(mood) {
+function updateBackgroundVideo(mood) {
     const video = document.getElementById('bgVideo');
     const config = moodConfigs[mood];
 
-    try {
-        // Wait for any existing play promise to complete before making changes
-        if (currentPlayPromise) {
-            await currentPlayPromise.catch(() => {}); // Ignore errors from previous promise
+    // Immediately pause to stop any ongoing operations
+    video.pause();
+    
+    // Set the new source directly
+    video.src = `public/${config.backgroundVideo}`;
+    
+    // Set essential properties
+    video.muted = true;
+    video.loop = true;
+    video.style.display = 'block';
+    
+    // Load the video
+    video.load();
+    
+    // Use a simple timeout-based approach to play
+    setTimeout(() => {
+        // Double-check video is ready and play with proper error handling
+        if (video.readyState >= 2) { // HAVE_CURRENT_DATA
+            video.play().catch(error => {
+                // Silently handle autoplay restrictions
+                console.log('Autoplay prevented, user interaction required');
+            });
+        } else {
+            // If not ready, wait for canplay event
+            video.addEventListener('canplay', () => {
+                video.play().catch(error => {
+                    console.log('Autoplay prevented, user interaction required');
+                });
+            }, { once: true });
         }
-
-        // Pause the video safely
-        if (!video.paused) {
-            video.pause();
-        }
-
-        // Reset video state
-        video.currentTime = 0;
-
-        // Update video source
-        const newSource = document.createElement('source');
-        newSource.src = `public/${config.backgroundVideo}`;
-        newSource.type = 'video/mp4';
-
-        // Clear and set new source
-        video.innerHTML = '';
-        video.appendChild(newSource);
-
-        // Set video properties
-        video.muted = true;
-        video.loop = true;
-        video.autoplay = true;
-        video.style.display = 'block';
-
-        // Load the new video
-        video.load();
-
-        // Wait for video to be ready and then play
-        await new Promise((resolve, reject) => {
-            const onReady = () => {
-                cleanup();
-                resolve();
-            };
-
-            const onError = (e) => {
-                cleanup();
-                reject(e);
-            };
-
-            const cleanup = () => {
-                video.removeEventListener('loadeddata', onReady);
-                video.removeEventListener('canplay', onReady);
-                video.removeEventListener('error', onError);
-            };
-
-            video.addEventListener('loadeddata', onReady, { once: true });
-            video.addEventListener('canplay', onReady, { once: true });
-            video.addEventListener('error', onError, { once: true });
-
-            // Fallback timeout
-            setTimeout(() => {
-                cleanup();
-                resolve();
-            }, 2000);
-        });
-
-        // Now safely play the video
-        currentPlayPromise = video.play();
-        await currentPlayPromise;
-        currentPlayPromise = null;
-
-    } catch (error) {
-        console.warn('Video playback error (this is usually harmless):', error);
-        currentPlayPromise = null;
-    }
+    }, 150); // Small delay to ensure previous operations complete
 }
 
 

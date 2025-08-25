@@ -216,50 +216,86 @@ function setMood(mood) {
     }
 }
 
-function updateBackgroundVideo(mood) {
+// Track current play promise to avoid conflicts
+let currentPlayPromise = null;
+
+// Update background video based on mood
+async function updateBackgroundVideo(mood) {
     const video = document.getElementById('bgVideo');
     const config = moodConfigs[mood];
 
-    // Pause and reset current video
-    video.pause();
-    video.currentTime = 0;
-
-    // Create new source element
-    const newSource = document.createElement('source');
-    newSource.src = `public/${config.backgroundVideo}`;
-    newSource.type = 'video/mp4';
-
-    // Clear existing sources and add new one
-    video.innerHTML = '';
-    video.appendChild(newSource);
-
-    // Ensure video properties are set
-    video.muted = true;
-    video.loop = true;
-    video.autoplay = true;
-    video.style.display = 'block';
-
-    // Load the new video
-    video.load();
-
-    // Use multiple event listeners to ensure video plays
-    const playVideo = () => {
-        video.play().catch(err => {
-            console.warn("Autoplay blocked or interrupted:", err);
-        });
-    };
-
-    // Try to play when video is ready
-    video.addEventListener('loadeddata', playVideo, { once: true });
-    video.addEventListener('canplay', playVideo, { once: true });
-
-    // Fallback: try to play after a short delay
-    setTimeout(() => {
-        if (video.paused) {
-            playVideo();
+    try {
+        // Wait for any existing play promise to complete before making changes
+        if (currentPlayPromise) {
+            await currentPlayPromise.catch(() => {}); // Ignore errors from previous promise
         }
-    }, 100);
+
+        // Pause the video safely
+        if (!video.paused) {
+            video.pause();
+        }
+
+        // Reset video state
+        video.currentTime = 0;
+
+        // Update video source
+        const newSource = document.createElement('source');
+        newSource.src = `public/${config.backgroundVideo}`;
+        newSource.type = 'video/mp4';
+
+        // Clear and set new source
+        video.innerHTML = '';
+        video.appendChild(newSource);
+
+        // Set video properties
+        video.muted = true;
+        video.loop = true;
+        video.autoplay = true;
+        video.style.display = 'block';
+
+        // Load the new video
+        video.load();
+
+        // Wait for video to be ready and then play
+        await new Promise((resolve, reject) => {
+            const onReady = () => {
+                cleanup();
+                resolve();
+            };
+
+            const onError = (e) => {
+                cleanup();
+                reject(e);
+            };
+
+            const cleanup = () => {
+                video.removeEventListener('loadeddata', onReady);
+                video.removeEventListener('canplay', onReady);
+                video.removeEventListener('error', onError);
+            };
+
+            video.addEventListener('loadeddata', onReady, { once: true });
+            video.addEventListener('canplay', onReady, { once: true });
+            video.addEventListener('error', onError, { once: true });
+
+            // Fallback timeout
+            setTimeout(() => {
+                cleanup();
+                resolve();
+            }, 2000);
+        });
+
+        // Now safely play the video
+        currentPlayPromise = video.play();
+        await currentPlayPromise;
+        currentPlayPromise = null;
+
+    } catch (error) {
+        console.warn('Video playback error (this is usually harmless):', error);
+        currentPlayPromise = null;
+    }
 }
+
 
 // Music functions
 function toggleMusic() {
